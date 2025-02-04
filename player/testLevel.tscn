@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bpxumi8fryerj"]
+[gd_scene load_steps=9 format=3 uid="uid://bpxumi8fryerj"]
 
 [ext_resource type="Texture2D" uid="uid://b3qssb5ocferw" path="res://assets/16x16 Steel Tileset.png" id="1_xpv8o"]
 [ext_resource type="PackedScene" uid="uid://dlnfbs88jidgp" path="res://player/player.tscn" id="2_0jw0l"]
+[ext_resource type="Script" path="res://player/pinball.gd" id="3_2ojuq"]
+[ext_resource type="PackedScene" uid="uid://8r57qbh3bltg" path="res://player/pinball.tscn" id="3_4m150"]
 [ext_resource type="Script" path="res://player/debug_canvas.gd" id="3_mifls"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b4p8d"]
@@ -85,6 +87,10 @@ offset_left = -1176.0
 offset_top = -1083.0
 offset_right = 1042.0
 offset_bottom = 978.0
+
+[node name="Player_pinball" parent="." instance=ExtResource("3_4m150")]
+position = Vector2(-161, -149)
+script = ExtResource("3_2ojuq")
 
 [node name="Player" parent="." instance=ExtResource("2_0jw0l")]
 position = Vector2(0, -20)

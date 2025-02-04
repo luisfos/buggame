@@ -1,13 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://dlnfbs88jidgp"]
+[gd_scene load_steps=6 format=3 uid="uid://8r57qbh3bltg"]
 
-[ext_resource type="Script" path="res://player/player.gd" id="1_yl2w2"]
-[ext_resource type="Texture2D" uid="uid://o21dwtw5pna5" path="res://assets/Player Placeholder.png" id="2_lncmv"]
+[ext_resource type="Script" path="res://player/player.gd" id="1_i5c8q"]
+[ext_resource type="Texture2D" uid="uid://o21dwtw5pna5" path="res://assets/Player Placeholder.png" id="2_ca7nv"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_7wsrt"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_lncmv")
+"texture": ExtResource("2_ca7nv")
 }],
 "loop": true,
 "name": &"falling",
@@ -15,7 +15,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_lncmv")
+"texture": ExtResource("2_ca7nv")
 }],
 "loop": true,
 "name": &"idle",
@@ -23,7 +23,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_lncmv")
+"texture": ExtResource("2_ca7nv")
 }],
 "loop": false,
 "name": &"jump",
@@ -31,15 +31,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_lncmv")
+"texture": ExtResource("2_ca7nv")
 }],
 "loop": true,
 "name": &"run",
 "speed": 12.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_pypfj"]
-size = Vector2(12, 27)
+[sub_resource type="CircleShape2D" id="CircleShape2D_b3pve"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m0nq6"]
 bg_color = Color(1, 0, 0.833333, 1)
@@ -47,18 +46,22 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
-[node name="Player" type="CharacterBody2D"]
-script = ExtResource("1_yl2w2")
+[node name="Player_pinball" type="CharacterBody2D"]
+script = ExtResource("1_i5c8q")
 
 [node name="animations" type="AnimatedSprite2D" parent="."]
+visible = false
 sprite_frames = SubResource("SpriteFrames_7wsrt")
-animation = &"jump"
+animation = &"falling"
 autoplay = "idle"
 
 [node name="colshape" type="CollisionShape2D" parent="."]
-visible = false
-shape = SubResource("RectangleShape2D_pypfj")
+shape = SubResource("CircleShape2D_b3pve")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -67,9 +70,15 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="stateVis" type="Panel" parent="Control"]
-layout_mode = 0
-offset_left = -7.0
-offset_top = -11.0
-offset_right = 7.0
-offset_bottom = 16.0
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_m0nq6")
+
+[node name="bullettimeLine" type="Line2D" parent="Control"]
+visible = false
+points = PackedVector2Array(0, 0, 20, 0)
+width = 5.0
