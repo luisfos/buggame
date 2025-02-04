@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bpxumi8fryerj"]
+[gd_scene load_steps=7 format=3 uid="uid://bpxumi8fryerj"]
 
 [ext_resource type="Texture2D" uid="uid://b3qssb5ocferw" path="res://assets/16x16 Steel Tileset.png" id="1_xpv8o"]
 [ext_resource type="PackedScene" uid="uid://dlnfbs88jidgp" path="res://player/player.tscn" id="2_0jw0l"]
+[ext_resource type="Script" path="res://player/debug_canvas.gd" id="3_mifls"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b4p8d"]
 texture = ExtResource("1_xpv8o")
@@ -54,6 +55,17 @@ texture = ExtResource("1_xpv8o")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_b4p8d")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dpgtr"]
+bg_color = Color(0.212305, 0.212305, 0.212305, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="Node2D" type="Node2D"]
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -78,3 +90,42 @@ offset_bottom = 978.0
 position = Vector2(0, -20)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="DebugCanvas" type="CanvasLayer" parent="." node_paths=PackedStringArray("node01")]
+script = ExtResource("3_mifls")
+node01 = NodePath("../Player")
+properties = Array[String](["velocity"])
+
+[node name="PanelContainer" type="PanelContainer" parent="DebugCanvas"]
+offset_right = 2.0
+offset_bottom = 2.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_dpgtr")
+
+[node name="MarginContainer" type="MarginContainer" parent="DebugCanvas/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DebugCanvas/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="LabelTitle" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 8
+text = "Debug info:"
+
+[node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "sample text
+"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DebugCanvas"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+text = "Velocity:
+Current state:"

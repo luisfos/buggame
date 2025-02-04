@@ -12,16 +12,26 @@ enum State {
 var current_state: State = State.idle
 # var velocity: Vector2 = Vector2.ZERO
 
+# initial values, shouldnt basically be Constants
 @export var maxSpeed: float = 200.0
 @export var maxAccel: float = 2000.0
 @export var maxDecel: float = 3000.0
 @export var maxAirAccel: float = 600.0
-@export var maxAirDecel: float = 100.0
+@export var maxAirDecel: float = 400.0
 @export var maxTurnSpeed: float = 2000.0
 @export var maxAirTurnSpeed: float = 2000.0
 var min_speed_unit: float = 5.0
-var jump_force: float = -400.0
-var gravity: float = 1000.0
+
+var GRAVITY = ProjectSettings.get_setting("physics/2d/default_gravity") # 980 
+
+var jump_height: float = 50.0
+var jump_apex_time: float = 0.2
+var jump_down_mult: float = 2.0
+
+# helper variables to manage over time
+var current_grav_mult = 1.0
+var gravity_scale = 1.0
+
 
 # references to nodes
 @onready var animations = $animations
@@ -46,7 +56,7 @@ func change_state(new_state: State) -> void:
 			vis.set_bg_color(Color.BLUE)			
 			animations.play("run")
 		State.jump:
-			velocity.y = jump_force
+			jump_impulse()
 			vis.set_bg_color(Color.YELLOW)
 			animations.play("jump")
 		State.falling:
@@ -59,16 +69,16 @@ func _physics_process(delta: float) -> void:
 
 	match current_state:
 		State.idle:
-			state_idle()
+			state_idle(movement_x)
 		State.run:	
 			state_run(delta, movement_x)			
 		State.jump:
-			velocity.y += gravity * delta
+			vert_movement(delta)
 			if velocity.y > 0:
 				change_state(State.falling)
 			side_movement(delta, movement_x)
 		State.falling:
-			velocity.y += gravity * delta
+			vert_movement(delta)
 			if is_on_floor():
 				if abs(velocity.x) > min_speed_unit:
 					change_state(State.run)
@@ -79,18 +89,16 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func state_idle() -> void:	
+func state_idle(movement_x) -> void:	
 	if not is_on_floor():
 		change_state(State.falling)
 		return			
 
-	if Input.is_action_just_pressed("up"):
-		velocity.y = -jump_force
+	if Input.is_action_just_pressed("up"):		
 		change_state(State.jump)
 		return
-
-	var movement = Input.get_axis('left', 'right') * maxSpeed     
-	if movement != 0 and is_on_floor():
+	
+	if movement_x != 0 and is_on_floor():
 		change_state(State.run)
 
 func state_run(delta, movement_x) -> void:
@@ -101,8 +109,7 @@ func state_run(delta, movement_x) -> void:
 		change_state(State.falling)
 		return
 
-	if Input.is_action_just_pressed("up"):
-		velocity.y = -jump_force
+	if Input.is_action_just_pressed("up"):		
 		change_state(State.jump)
 		return
 
@@ -132,3 +139,31 @@ func side_movement(delta, movement_x) -> void:
 	# print("maxSpeedChange: ", maxSpeedChange)
 	velocity.x = move_toward(velocity.x, movement_x * maxSpeed, maxSpeedChange)
 	
+func vert_movement(delta) -> void:
+	# handles movement in y direction
+	# no state changes in here.
+	
+	# velocity.y += GRAVITY * delta
+	var new_gravity = (2.0 * jump_height) / (jump_apex_time * jump_apex_time)
+	gravity_scale = (new_gravity / GRAVITY) * current_grav_mult
+
+	if velocity.y == 0:
+		current_grav_mult = 1.0
+	elif velocity.y > min_speed_unit:		
+		current_grav_mult = jump_down_mult	
+
+	velocity.y += GRAVITY * gravity_scale * delta 
+	
+
+func jump_impulse() -> void:
+	if is_on_floor(): # this check may be redundant
+		var jumpSpeed = -sqrt( 2.0 * GRAVITY * gravity_scale * jump_height )
+		
+		print("jumpSpeed: ", jumpSpeed)
+		print("gs: ", gravity_scale)
+		if velocity.y < 0: # while rising
+			jumpSpeed = min(jumpSpeed - velocity.y, 0)
+		elif velocity.y > 0: # while falling
+			jumpSpeed -= abs(velocity.y)
+		
+		velocity.y += jumpSpeed	

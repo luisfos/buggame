@@ -33,7 +33,7 @@ enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
 
 [gui]
 
-theme/custom_font="res://assets/quaver.ttf"
+theme/default_font_multichannel_signed_distance_field=true
 
 [input]
 
