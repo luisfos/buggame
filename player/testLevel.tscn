@@ -91,6 +91,7 @@ offset_bottom = 978.0
 [node name="Player_pinball" parent="." instance=ExtResource("3_4m150")]
 position = Vector2(-161, -149)
 script = ExtResource("3_2ojuq")
+pinball_strength = 30
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

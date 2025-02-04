@@ -692,13 +692,6 @@ sources/7 = SubResource("TileSetAtlasSource_63aso")
 [node name="Player" parent="." instance=ExtResource("2_u1ms1")]
 z_index = 10
 position = Vector2(12, -20)
-maxSpeed = 200.0
-maxAccel = 2000.0
-maxDecel = 3000.0
-maxAirAccel = 600.0
-maxAirDecel = 400.0
-maxTurnSpeed = 2000.0
-maxAirTurnSpeed = 2000.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
