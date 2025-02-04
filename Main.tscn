@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://Options Menu.gd" id="14_81ny7"]
 [ext_resource type="Script" path="res://sliderLabel.gd" id="15_idtfi"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_epj5p"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_npo7k"]
 texture = ExtResource("1_1cngq")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -59,7 +59,7 @@ texture = ExtResource("1_1cngq")
 
 [sub_resource type="TileSet" id="TileSet_yvoia"]
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_epj5p")
+sources/0 = SubResource("TileSetAtlasSource_npo7k")
 
 [sub_resource type="Resource" id="Resource_dshuq"]
 script = ExtResource("3_nnml3")
@@ -208,7 +208,6 @@ top_level = true
 script = ExtResource("2_kebbj")
 follow_mode = 1
 follow_target = NodePath("../Player")
-zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_dshuq")
 
 [node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("PlayerSprite", "PlayerCollider", "leftRaycast", "middleRaycast", "rightRaycast")]
@@ -292,7 +291,6 @@ texture = SubResource("AtlasTexture_je7cg")
 
 [node name="MainCam2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
-zoom = Vector2(2, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCam2D"]
 process_priority = 300
@@ -308,7 +306,7 @@ anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -250.0
-offset_bottom = 416.0
+offset_bottom = 24.0
 grow_horizontal = 0
 grow_vertical = 2
 size_flags_horizontal = 8
@@ -348,7 +346,7 @@ theme_override_constants/margin_right = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Options Panel/HBoxContainer/MarginContainer"]
 layout_mode = 2
-size_flags_vertical = 0
+theme_override_constants/separation = 0
 
 [node name="UpdateSettings" type="Button" parent="CanvasLayer/Options Panel/HBoxContainer/MarginContainer/VBoxContainer"]
 visible = false
