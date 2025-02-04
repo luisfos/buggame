@@ -13,6 +13,12 @@ extends CanvasLayer
 func get_property_string(node: Node, property_name: String) -> String:
 	# Use the get() method to retrieve the property's value.
 	var value = node.get(property_name)
+	# Check if the value is a float and truncate to 3 significant figures.
+	if typeof(value) == TYPE_FLOAT:
+		value = "%.3f" % value
+	# Check if the value is a Vector2 and truncate to 3 significant figures.
+	if typeof(value) == TYPE_VECTOR2:
+		value = String( "(%.1f," % value.x + "%.1f)" % value.y )
 	# Format the output string.
 	return "%s : %s" % [property_name, str(value)]
 

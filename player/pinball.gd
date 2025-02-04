@@ -34,6 +34,8 @@ var current_grav_mult = 1.0
 var gravity_scale = 1.0
 var bullet_time_input_count = 0
 var bullet_time_direction: Vector2i = Vector2i.ZERO
+var pinball_on_floor: bool = false
+var pinball_bounce_count: int = 0
 
 # references to nodes
 @onready var animations = $animations
@@ -48,10 +50,8 @@ var bullet_time_direction: Vector2i = Vector2i.ZERO
 func _ready() -> void:
 	add_child(bullet_time_timer)
 	bullet_time_timer.one_shot = true	
-	bullet_time_timer.connect("timeout", Callable(self, "_on_bullet_time_timeout"))
-	# pass
-	#var sb = vis.
-	#print(sb)
+	bullet_time_timer.connect("timeout", Callable(self, "_on_bullet_time_timeout"))	
+
 
 func change_state(new_state: State) -> void:
 	# runs once on state change
@@ -59,9 +59,11 @@ func change_state(new_state: State) -> void:
 	current_state = new_state
 	match current_state:
 		State.idle:
+			current_grav_mult = 1.0
 			vis.set_bg_color(Color.AQUA)
 			animations.play("idle")
 		State.run:
+			current_grav_mult = 1.0
 			vis.set_bg_color(Color.BLUE)			
 			animations.play("run")
 		State.jump:
@@ -71,6 +73,9 @@ func change_state(new_state: State) -> void:
 		State.falling:
 			vis.set_bg_color(Color.LIME_GREEN)
 			animations.play("falling")
+		State.pinball:
+			vis.set_bg_color(Color.RED)
+			animations.visible = false
 
 func _physics_process(delta: float) -> void:
 	# runs every frame
@@ -106,6 +111,7 @@ func _physics_process(delta: float) -> void:
 		during_bullettime()
 	
 	if current_state != State.pinball:
+		pinball_on_floor = is_on_floor()		
 		move_and_slide()
 
 
@@ -135,7 +141,7 @@ func state_run(delta, movement_x) -> void:
 
 	side_movement(delta, movement_x)
 
-func side_movement(delta, movement_x) -> void:
+func side_movement(delta, movement_x, strength: float = 1.0) -> void:
 	# run in multiple states, run falling etc
 	# modifies velocity
 	var accel = maxAccel if is_on_floor() else maxAirAccel
@@ -143,6 +149,7 @@ func side_movement(delta, movement_x) -> void:
 	var turnSpeed = maxTurnSpeed if is_on_floor() else maxAirTurnSpeed
 	var maxSpeedChange: float = 0.0
 
+	decel = lerp(0.0, decel, strength) # reduce drag
 	if movement_x != 0:
 		if sign(velocity.x) != sign(movement_x): 
 			# turn to opposite direction			
@@ -159,7 +166,7 @@ func side_movement(delta, movement_x) -> void:
 	# print("maxSpeedChange: ", maxSpeedChange)
 	velocity.x = move_toward(velocity.x, movement_x * maxSpeed, maxSpeedChange)
 	
-func vert_movement(delta) -> void:
+func vert_movement(delta, strength: float = 1.0) -> void:
 	# handles movement in y direction
 	# no state changes in here.
 	
@@ -167,20 +174,21 @@ func vert_movement(delta) -> void:
 	var new_gravity = (2.0 * jump_height) / (jump_apex_time * jump_apex_time)
 	gravity_scale = (new_gravity / GRAVITY) * current_grav_mult
 
-	if velocity.y == 0:
+	if abs(velocity.y) < min_speed_unit:
 		current_grav_mult = 1.0
 	elif velocity.y > min_speed_unit:		
 		current_grav_mult = jump_down_mult	
-
-	velocity.y += GRAVITY * gravity_scale * delta 
+	
+	# strength affects how much custom gravity scale is applied
+	velocity.y += GRAVITY * lerp(1.0, gravity_scale, strength) * delta 
 	
 
 func jump_impulse() -> void:
 	if is_on_floor(): # this check may be redundant
 		var jumpSpeed = -sqrt( 2.0 * GRAVITY * gravity_scale * jump_height )
 		
-		print("jumpSpeed: ", jumpSpeed)
-		print("gs: ", gravity_scale)
+		# print("jumpSpeed: ", jumpSpeed)
+		# print("gs: ", gravity_scale)
 		if velocity.y < 0: # while rising
 			jumpSpeed = min(jumpSpeed - velocity.y, 0)
 		elif velocity.y > 0: # while falling
@@ -189,25 +197,46 @@ func jump_impulse() -> void:
 		velocity.y += jumpSpeed	
 
 func state_pinball(delta) -> void:
-	if is_on_floor():
-		if velocity.is_zero_approx():
+	pinball_movement(delta)
+	
+	if pinball_on_floor:		
+		if abs(velocity.y) < min_speed_unit*min_speed_unit:
+			velocity = Vector2.ZERO
+			current_grav_mult = 1.0
 			change_state(State.idle)
 			return
 		elif velocity.length_squared() < min_speed_unit*10:
 			change_state(State.run)
+			current_grav_mult = 1.0
 			return
-	elif velocity.y < min_speed_unit: # falling?
-		pass
+	elif velocity.y > 0: # if falling
+		if velocity.y < min_speed_unit and pinball_bounce_count>4: # falling?
+			change_state(State.falling)		
 
-	pinball_movement(delta)
 	
-func pinball_movement(delta) -> void:
+func pinball_movement(delta) -> void:	
+	var movement_x = Input.get_axis('left', 'right')   
+	side_movement(delta, movement_x, 0.25)
+	vert_movement(delta, 0.25)
+	pinball_on_floor = false
+
 	var collision_info = move_and_collide(velocity * delta)
 	if collision_info:
-		velocity = velocity.bounce(collision_info.get_normal())
+		pinball_bounce_count += 1
+		var nml: Vector2 = collision_info.get_normal()
+		velocity = velocity.bounce(nml) * .9
+		# reduce velocity if hitting up facing floors
+		if abs(nml.y) > floor_max_angle: 
+			pinball_on_floor = true			
+			velocity.y *= 0.9
+			
 
-	side_movement(delta, 0.0)
-	vert_movement(delta)
+	# reduce velocity to stop infinite bouncing
+	if velocity.length_squared() < 2*min_speed_unit*min_speed_unit:
+		velocity *= 0.66
+	if abs(velocity.y) < min_speed_unit:
+		velocity.y = 0
+		
 		
 
 
@@ -245,7 +274,7 @@ func during_bullettime() -> void:
 func exit_bullettime() -> void:
 	# print("exiting bullet time")
 	# if 3 directions are pressed, move in that direction
-	velocity = bullet_time_direction * maxSpeed * 2	
+	velocity = bullet_time_direction * maxSpeed * 3	
 	change_state(State.pinball)
 	bullet_time_timer.stop()
 	bullet_time_line2D.visible = false

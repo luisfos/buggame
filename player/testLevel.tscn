@@ -92,15 +92,12 @@ offset_bottom = 978.0
 position = Vector2(-161, -149)
 script = ExtResource("3_2ojuq")
 
-[node name="Player" parent="." instance=ExtResource("2_0jw0l")]
-position = Vector2(0, -20)
-
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="DebugCanvas" type="CanvasLayer" parent="." node_paths=PackedStringArray("node01")]
 script = ExtResource("3_mifls")
-node01 = NodePath("../Player")
-properties = Array[String](["velocity", "current_state", "bullet_time_input_count"])
+node01 = NodePath("../Player_pinball")
+properties = Array[String](["velocity", "current_state", "bullet_time_input_count", "pinball_on_floor", "gravity_scale", "current_grav_mult"])
 
 [node name="PanelContainer" type="PanelContainer" parent="DebugCanvas"]
 offset_right = 2.0
@@ -129,3 +126,10 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "properties go here: value
 "
+
+[node name="bin" type="Node" parent="."]
+process_mode = 4
+
+[node name="Player" parent="bin" instance=ExtResource("2_0jw0l")]
+visible = false
+position = Vector2(0, -20)
