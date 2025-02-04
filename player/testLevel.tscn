@@ -94,7 +94,7 @@ position = Vector2(0, -20)
 [node name="DebugCanvas" type="CanvasLayer" parent="." node_paths=PackedStringArray("node01")]
 script = ExtResource("3_mifls")
 node01 = NodePath("../Player")
-properties = Array[String](["velocity"])
+properties = Array[String](["velocity", "current_state", "bullet_time_input_count"])
 
 [node name="PanelContainer" type="PanelContainer" parent="DebugCanvas"]
 offset_right = 2.0
@@ -109,6 +109,7 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DebugCanvas/PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
 [node name="LabelTitle" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
@@ -120,12 +121,5 @@ text = "Debug info:"
 [node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "sample text
+text = "properties go here: value
 "
-
-[node name="RichTextLabel" type="RichTextLabel" parent="DebugCanvas"]
-visible = false
-offset_right = 40.0
-offset_bottom = 40.0
-text = "Velocity:
-Current state:"

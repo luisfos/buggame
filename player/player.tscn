@@ -73,3 +73,7 @@ offset_top = -11.0
 offset_right = 7.0
 offset_bottom = 16.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_m0nq6")
+
+[node name="bullettimeLine" type="Line2D" parent="Control"]
+points = PackedVector2Array(0, 0, 20, 0)
+width = 5.0

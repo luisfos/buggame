@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=4 uid="uid://d1becwtrg0nms"]
+[gd_scene load_steps=15 format=4 uid="uid://dq7ps720k5qb3"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_f5qbi"]
 [ext_resource type="Texture2D" uid="uid://bmjpjpg4xph35" path="res://assets/kenney_pixel-platformer-blocks/Tilemap/marble_packed.png" id="2_kj76k"]

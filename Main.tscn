@@ -183,7 +183,7 @@ border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D2" type="Node2D"]
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_yvoia")
