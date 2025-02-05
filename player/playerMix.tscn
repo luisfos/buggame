@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://fxip3lkvdp83"]
+[gd_scene load_steps=8 format=3 uid="uid://fxip3lkvdp83"]
 
 [ext_resource type="Texture2D" uid="uid://o21dwtw5pna5" path="res://assets/Player Placeholder.png" id="2_1s643"]
+[ext_resource type="Script" path="res://player/state_machine.gd" id="5_yepb8"]
+[ext_resource type="Script" path="res://player/states/base_movement.gd" id="6_n5646"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_7wsrt"]
 animations = [{
@@ -40,6 +42,8 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pypfj"]
 size = Vector2(12, 27)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_skjx5"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m0nq6"]
 bg_color = Color(1, 0, 0.833333, 0.392157)
 border_width_left = 1
@@ -53,17 +57,51 @@ corner_radius_bottom_left = 4
 anti_aliasing = false
 anti_aliasing_size = 0.01
 
-[node name="PlayerMix" type="CharacterBody2D"]
+[node name="PlayerMix" type="Node2D"]
 
 [node name="animations" type="AnimatedSprite2D" parent="."]
 visible = false
 sprite_frames = SubResource("SpriteFrames_7wsrt")
-animation = &"jump"
+animation = &"falling"
 autoplay = "idle"
 
-[node name="colshape" type="CollisionShape2D" parent="."]
-visible = false
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+process_mode = 4
+
+[node name="charCol" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("RectangleShape2D_pypfj")
+
+[node name="Label" type="Label" parent="CharacterBody2D"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -35.0
+offset_right = 20.0
+offset_bottom = -12.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+text = "CB"
+horizontal_alignment = 1
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+process_mode = 4
+
+[node name="pinballCol" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CircleShape2D_skjx5")
+
+[node name="Label" type="Label" parent="RigidBody2D"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -16.0
+offset_right = 20.0
+offset_bottom = 7.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+text = "Rigid"
+horizontal_alignment = 1
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -78,3 +116,10 @@ offset_top = -16.0
 offset_right = 12.0
 offset_bottom = 16.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_m0nq6")
+
+[node name="State Machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("5_yepb8")
+initial_state = NodePath("Movement")
+
+[node name="Movement" type="Node" parent="State Machine"]
+script = ExtResource("6_n5646")

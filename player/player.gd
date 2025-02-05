@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-enum State {
+enum enumState {
 	idle,
 	run,
 	jump,
@@ -9,7 +9,7 @@ enum State {
 
 # state variables
 # godot 2D is y down. gravity is positive. jump is negative
-var current_state: State = State.idle
+var current_state: enumState = enumState.idle
 # var velocity: Vector2 = Vector2.ZERO
 
 # initial values, shouldnt basically be Constants
@@ -43,22 +43,22 @@ var gravity_scale = 1.0 # is built in to RigidBody2D
 func _ready() -> void:	
 	pass
 
-func change_state(new_state: State) -> void:
+func change_state(new_state: enumState) -> void:
 	# runs once on state change
 	print("changing state from: ", current_state, ", 	to: ", new_state)
 	current_state = new_state
 	match current_state:
-		State.idle:
+		enumState.idle:
 			vis.set_bg_color(Color.AQUA)
 			animations.play("idle")
-		State.run:
+		enumState.run:
 			vis.set_bg_color(Color.BLUE)			
 			animations.play("run")
-		State.jump:
+		enumState.jump:
 			jump_impulse()
 			vis.set_bg_color(Color.YELLOW)
 			animations.play("jump")
-		State.falling:
+		enumState.falling:
 			vis.set_bg_color(Color.LIME_GREEN)
 			animations.play("falling")
 
@@ -67,22 +67,22 @@ func _physics_process(delta: float) -> void:
 	var movement_x = Input.get_axis('left', 'right')   	
 
 	match current_state:
-		State.idle:
+		enumState.idle:
 			state_idle(movement_x)
-		State.run:	
+		enumState.run:	
 			state_run(delta, movement_x)			
-		State.jump:
+		enumState.jump:
 			vert_movement(delta)
 			if velocity.y > 0:
-				change_state(State.falling)
+				change_state(enumState.falling)
 			side_movement(delta, movement_x)
-		State.falling:
+		enumState.falling:
 			vert_movement(delta)
 			if is_on_floor():
 				if abs(velocity.x) > min_speed_unit:
-					change_state(State.run)
+					change_state(enumState.run)
 				else:
-					change_state(State.idle)
+					change_state(enumState.idle)
 			side_movement(delta, movement_x)	
 	
 	
@@ -91,26 +91,26 @@ func _physics_process(delta: float) -> void:
 
 func state_idle(movement_x) -> void:	
 	if not is_on_floor():
-		change_state(State.falling)
+		change_state(enumState.falling)
 		return			
 
 	if Input.is_action_just_pressed("up"):		
-		change_state(State.jump)
+		change_state(enumState.jump)
 		return
 	
 	if movement_x != 0 and is_on_floor():
-		change_state(State.run)
+		change_state(enumState.run)
 
 func state_run(delta, movement_x) -> void:
 	if is_on_floor() and movement_x == 0 and abs(velocity.x) < min_speed_unit:
-		change_state(State.idle)	
+		change_state(enumState.idle)	
 					
 	if not is_on_floor():
-		change_state(State.falling)
+		change_state(enumState.falling)
 		return
 
 	if Input.is_action_just_pressed("up"):		
-		change_state(State.jump)
+		change_state(enumState.jump)
 		return
 
 	side_movement(delta, movement_x)
