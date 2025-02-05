@@ -15,7 +15,7 @@ duration = 1.0
 transition = 0
 ease = 2
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_21vjr"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1s4vc"]
 texture = ExtResource("2_kj76k")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
@@ -181,7 +181,7 @@ texture_region_size = Vector2i(18, 18)
 8:8/0 = 0
 8:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-9, -9, 9, -9, 9, 9, -9, 9)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nlml1"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cqx50"]
 texture = ExtResource("3_6w78f")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
@@ -347,7 +347,7 @@ texture_region_size = Vector2i(18, 18)
 8:8/0 = 0
 8:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-9, -9, 9, -9, 9, 9, -9, 9)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xalbp"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mv2fb"]
 texture = ExtResource("4_p2j18")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
@@ -513,7 +513,7 @@ texture_region_size = Vector2i(18, 18)
 8:8/0 = 0
 8:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-9, -9, 9, -9, 9, 9, -9, 9)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_63aso"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nh4iv"]
 texture = ExtResource("5_g80qs")
 texture_region_size = Vector2i(18, 18)
 0:0/0 = 0
@@ -682,10 +682,10 @@ texture_region_size = Vector2i(18, 18)
 [sub_resource type="TileSet" id="TileSet_kfhgy"]
 tile_size = Vector2i(18, 18)
 physics_layer_0/collision_layer = 1
-sources/1 = SubResource("TileSetAtlasSource_21vjr")
-sources/3 = SubResource("TileSetAtlasSource_nlml1")
-sources/5 = SubResource("TileSetAtlasSource_xalbp")
-sources/7 = SubResource("TileSetAtlasSource_63aso")
+sources/1 = SubResource("TileSetAtlasSource_1s4vc")
+sources/3 = SubResource("TileSetAtlasSource_cqx50")
+sources/5 = SubResource("TileSetAtlasSource_mv2fb")
+sources/7 = SubResource("TileSetAtlasSource_nh4iv")
 
 [node name="Node2D" type="Node2D"]
 
