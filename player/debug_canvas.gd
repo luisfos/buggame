@@ -1,13 +1,11 @@
+@tool
 extends CanvasLayer
-
-
 
 @onready var lbl_parms: Label = $PanelContainer/MarginContainer/VBoxContainer/lbl_parms
 
 @export var node01: Node2D
 @export var properties: Array[String] = []
 #@export var multiple: Array[Node2D] = []
-
 
 
 func get_property_string(node: Node, property_name: String) -> String:

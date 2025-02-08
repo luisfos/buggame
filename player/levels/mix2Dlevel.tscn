@@ -1,9 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://pxx7sksxt1jt"]
+[gd_scene load_steps=7 format=3 uid="uid://pxx7sksxt1jt"]
 
 [ext_resource type="Texture2D" uid="uid://b3qssb5ocferw" path="res://assets/16x16 Steel Tileset.png" id="1_760bf"]
-[ext_resource type="PackedScene" uid="uid://8r57qbh3bltg" path="res://player/pinball.tscn" id="2_i55cy"]
 [ext_resource type="PackedScene" uid="uid://fxip3lkvdp83" path="res://player/playerMix.tscn" id="2_qkcxx"]
-[ext_resource type="Script" path="res://player/pinball.gd" id="3_2g53k"]
 [ext_resource type="Script" path="res://player/debug_canvas.gd" id="4_b67h5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b4p8d"]
@@ -95,8 +93,8 @@ position = Vector2(-251, -202)
 
 [node name="DebugCanvas" type="CanvasLayer" parent="." node_paths=PackedStringArray("node01")]
 script = ExtResource("4_b67h5")
-node01 = NodePath("../bin/Player_pinball")
-properties = Array[String](["velocity", "current_state", "bullet_time_input_count", "pinball_on_floor", "gravity_scale", "current_grav_mult"])
+node01 = NodePath("../PlayerMix")
+properties = Array[String](["linear_velocity", "is_on_floor", "current_state"])
 
 [node name="PanelContainer" type="PanelContainer" parent="DebugCanvas"]
 offset_right = 2.0
@@ -123,14 +121,10 @@ text = "Debug info:"
 [node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "properties go here: value
+text = "linear_velocity : (0.0,0.0)
+is_on_floor : <null>
+current_state : <null>
 "
 
 [node name="bin" type="Node" parent="."]
 process_mode = 4
-
-[node name="Player_pinball" parent="bin" instance=ExtResource("2_i55cy")]
-visible = false
-position = Vector2(-161, -149)
-script = ExtResource("3_2g53k")
-pinball_strength = 30
