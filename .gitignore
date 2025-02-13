@@ -3,3 +3,4 @@
 .vscode/
 *.tmp
 dump/
+godot_state_charts_examples/

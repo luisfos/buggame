@@ -1,0 +1,162 @@
+[gd_scene load_steps=15 format=3 uid="uid://b6aecx83y0k5h"]
+
+[ext_resource type="Script" path="res://stateChartPlayer/scripts/sc_player.gd" id="1_kseyb"]
+[ext_resource type="Texture2D" uid="uid://o21dwtw5pna5" path="res://assets/Player Placeholder.png" id="2_6qet5"]
+[ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="2_kup3f"]
+[ext_resource type="Script" path="res://player/states/state_machine.gd" id="3_ydl1o"]
+[ext_resource type="Script" path="res://player/states/movement.gd" id="4_0yctg"]
+[ext_resource type="Script" path="res://player/states/pinball.gd" id="5_m15dg"]
+[ext_resource type="Script" path="res://player/states/jump.gd" id="6_4xep7"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/state_chart.gd" id="6_j3523"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/compound_state.gd" id="7_4c5p3"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/atomic_state.gd" id="9_b1co7"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_krfwo"]
+bounce = 0.5
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_skjx5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7wsrt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_6qet5")
+}],
+"loop": true,
+"name": &"falling",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_6qet5")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_6qet5")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_6qet5")
+}],
+"loop": true,
+"name": &"run",
+"speed": 12.0
+}]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m0nq6"]
+bg_color = Color(1, 0, 0.833333, 0.392157)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+anti_aliasing = false
+anti_aliasing_size = 0.01
+
+[node name="PlayerMix" type="RigidBody2D"]
+physics_material_override = SubResource("PhysicsMaterial_krfwo")
+contact_monitor = true
+max_contacts_reported = 1
+script = ExtResource("1_kseyb")
+
+[node name="pinballCol" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_skjx5")
+
+[node name="PID_target" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="PID_target"]
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("2_kup3f")
+
+[node name="anchor" type="Node2D" parent="."]
+
+[node name="rayL" type="RayCast2D" parent="anchor"]
+position = Vector2(-10, 0)
+target_position = Vector2(0, 11)
+
+[node name="rayC" type="RayCast2D" parent="anchor"]
+target_position = Vector2(0, 11)
+
+[node name="rayR" type="RayCast2D" parent="anchor"]
+position = Vector2(10, 0)
+target_position = Vector2(0.585, 11)
+
+[node name="animations" type="AnimatedSprite2D" parent="."]
+visible = false
+sprite_frames = SubResource("SpriteFrames_7wsrt")
+animation = &"falling"
+autoplay = "idle"
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -5.0
+offset_top = -23.0
+offset_right = 35.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.251555, 0.251555)
+size_flags_horizontal = 4
+text = "Rigid"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="stateVis" type="Panel" parent="Control"]
+layout_mode = 0
+offset_left = -12.0
+offset_top = -16.0
+offset_right = 12.0
+offset_bottom = 16.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_m0nq6")
+
+[node name="state_machine" type="Node" parent="."]
+process_mode = 4
+script = ExtResource("3_ydl1o")
+initial_state_name = "movement"
+debug_transition = true
+
+[node name="movement" type="Node" parent="state_machine"]
+script = ExtResource("4_0yctg")
+
+[node name="pinball" type="Node" parent="state_machine"]
+script = ExtResource("5_m15dg")
+
+[node name="jump" type="Node" parent="state_machine"]
+script = ExtResource("6_4xep7")
+
+[node name="StateChart" type="Node" parent="."]
+script = ExtResource("6_j3523")
+
+[node name="Root" type="Node" parent="StateChart"]
+script = ExtResource("7_4c5p3")
+initial_state = NodePath("Movement")
+
+[node name="Movement" type="Node" parent="StateChart/Root"]
+script = ExtResource("7_4c5p3")
+initial_state = NodePath("Grounded")
+
+[node name="Grounded" type="Node" parent="StateChart/Root/Movement"]
+script = ExtResource("9_b1co7")
+
+[node name="Airborne" type="Node" parent="StateChart/Root/Movement"]
+script = ExtResource("9_b1co7")
