@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://m50xugr4d608"]
+[gd_scene load_steps=15 format=3 uid="uid://m50xugr4d608"]
 
 [ext_resource type="Texture2D" uid="uid://b3qssb5ocferw" path="res://assets/16x16 Steel Tileset.png" id="1_axby8"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="2_lu41j"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://b6aecx83y0k5h" path="res://stateChartPlayer/sc_player.tscn" id="7_6ddo5"]
 [ext_resource type="PackedScene" uid="uid://bcwkugn6v3oy7" path="res://addons/godot_state_charts/utilities/state_chart_debugger.tscn" id="7_88kkb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="7_p313t"]
+[ext_resource type="PackedScene" uid="uid://5iyycjf467hk" path="res://debug/PIDchart.tscn" id="8_m5mvw"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_npo7k"]
 texture = ExtResource("1_axby8")
@@ -178,8 +179,21 @@ _is_on_floor : <null>
 "
 
 [node name="StateChartDebugger" parent="." instance=ExtResource("7_88kkb")]
-offset_left = 93.0
-offset_top = -455.0
-offset_right = 444.0
-offset_bottom = -103.0
+offset_left = 298.0
+offset_top = -609.0
+offset_right = 649.0
+offset_bottom = -257.0
 initial_node_to_watch = NodePath("../PlayerMix")
+
+[node name="CanvasLayer_BR" type="CanvasLayer" parent="."]
+
+[node name="PIDchart" parent="CanvasLayer_BR" instance=ExtResource("8_m5mvw")]
+clip_contents = true
+custom_minimum_size = Vector2(200, 200)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+offset_left = -528.0
+offset_top = -324.0
+grow_horizontal = 0
+grow_vertical = 0
