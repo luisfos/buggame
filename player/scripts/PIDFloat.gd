@@ -7,9 +7,9 @@ enum DerivativeMeasurement {
 }
 
 # PID coefficients
-var proportional_gain: float
-var integral_gain: float
-var derivative_gain: float
+var _p: float
+var _i: float
+var _d: float
 
 var output_min: float
 var output_max: float
@@ -19,6 +19,7 @@ var derivative_measurement: DerivativeMeasurement
 # Internal state
 var value_last: float = 0.0
 var error_last: float = 0.0
+var result_last: float = 0.0
 var integration_stored: float = 0.0
 var velocity: float = 0.0  # Used for debugging/monitoring
 var derivative_initialized: bool = false
@@ -30,9 +31,9 @@ func _init(
     integral_saturation_: float = 0.0,
     derivative_measurement_: DerivativeMeasurement = DerivativeMeasurement.ERROR_RATE_OF_CHANGE
 ):
-    proportional_gain = kp
-    integral_gain = ki
-    derivative_gain = kd
+    _p = kp
+    _i = ki
+    _d = kd
     output_min = output_min_
     output_max = output_max_
     integral_saturation = integral_saturation_
@@ -54,11 +55,11 @@ func update(dt: float, current_value: float, target_value: float) -> float:
     var error = target_value - current_value
 
     # Proportional term
-    var P = proportional_gain * error
+    var P = _p * error
 
     # Integral term with clamping (anti-windup)
     integration_stored = clamp(integration_stored + (error * dt), -integral_saturation, integral_saturation)
-    var I = integral_gain * integration_stored
+    var I = _i * integration_stored
 
     # Derivative term calculations
     var error_rate_of_change = (error - error_last) / dt
@@ -78,10 +79,11 @@ func update(dt: float, current_value: float, target_value: float) -> float:
     else:
         derivative_initialized = true  # First update, skip derivative term
 
-    var D = derivative_gain * derive_measure
+    var D = _d * derive_measure
 
     # Compute final output
     var result = P + I + D
+    result_last = result
     return clamp(result, output_min, output_max)
 
 # Angle difference calculation (keeps angles within [-π, π] range)
@@ -97,11 +99,11 @@ func update_angle(dt: float, current_angle: float, target_angle: float) -> float
     var error = angle_difference(target_angle, current_angle)
 
     # Proportional term
-    var P = proportional_gain * error
+    var P = _p * error
 
     # Integral term with clamping
     integration_stored = clamp(integration_stored + (error * dt), -integral_saturation, integral_saturation)
-    var I = integral_gain * integration_stored
+    var I = _i * integration_stored
 
     # Derivative term calculations
     var error_rate_of_change = angle_difference(error, error_last) / dt
@@ -121,8 +123,9 @@ func update_angle(dt: float, current_angle: float, target_angle: float) -> float
     else:
         derivative_initialized = true  # First update, skip derivative term
 
-    var D = derivative_gain * derive_measure
+    var D = _d * derive_measure
 
     # Compute final output
     var result = P + I + D
+    result_last = result
     return clamp(result, output_min, output_max)

@@ -53,7 +53,7 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="MarginContainer/HBoxContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
-text = "PID: asdfsdf"
+text = "PID: name"
 label_settings = SubResource("LabelSettings_ytkek")
 
 [node name="info" type="Label" parent="MarginContainer/HBoxContainer/PanelContainer/VBoxContainer"]
@@ -80,5 +80,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 0.65098, 1, 0.184314)
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = -55
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="max_y" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+text = "100"
+
+[node name="min_y" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+text = "-100"
 
 [connection signal="draw" from="MarginContainer/HBoxContainer/Chart" to="." method="_on_chart_draw"]

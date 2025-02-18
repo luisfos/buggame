@@ -187,7 +187,7 @@ initial_node_to_watch = NodePath("../PlayerMix")
 
 [node name="CanvasLayer_BR" type="CanvasLayer" parent="."]
 
-[node name="PIDchart" parent="CanvasLayer_BR" instance=ExtResource("8_m5mvw")]
+[node name="PIDchart" parent="CanvasLayer_BR" node_paths=PackedStringArray("node") instance=ExtResource("8_m5mvw")]
 clip_contents = true
 custom_minimum_size = Vector2(200, 200)
 anchors_preset = 3
@@ -197,3 +197,6 @@ offset_left = -528.0
 offset_top = -324.0
 grow_horizontal = 0
 grow_vertical = 0
+node = NodePath("../../PlayerMix")
+property = "current_pid"
+data_bounds = 200.0

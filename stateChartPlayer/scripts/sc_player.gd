@@ -40,6 +40,8 @@ var pid_thruster := PIDFloat.new(1.0, 0.0, 0.1, TERMINAL_SPEED*10)
 var pid_angle = PIDFloat.new(1.0, 0.5, 0.1,
 				 -45, 45, 45.0, PIDFloat.DerivativeMeasurement.VELOCITY)
 
+var current_pid : PIDFloat = pid_angle
+
 
 # timers
 var timer_jump_held := 0.3
