@@ -33,15 +33,16 @@ var pid_new = PIDFloat.new(1.0, 0.5, 0.1,
 				-TERMINAL_SPEED, TERMINAL_SPEED,
 				10.0, PIDFloat.DerivativeMeasurement.VELOCITY)
 
-var pid_thruster := PIDFloat.new(1.0, 0.0, 0.1, TERMINAL_SPEED*10) 
+var pid_thruster := PIDFloat.new(1.0, 0.01, 0.0, -300, 0, 300, PIDFloat.DerivativeMeasurement.VELOCITY)
 
 # -45 to 45
 # this is in degrees, must convert output to radians!
-var pid_angle = PIDFloat.new(1.0, 0.5, 0.1,
-				 -45, 45, 45.0, PIDFloat.DerivativeMeasurement.VELOCITY)
+var pid_angle = PIDFloat.new(1.5, 0.005, 0.05,
+				 -45, 45, 999, PIDFloat.DerivativeMeasurement.VELOCITY)
 
-var current_pid : PIDFloat = pid_angle
-
+var current_pid : PIDFloat = pid_thruster
+var output_thrust_force : Vector2 = Vector2.ZERO
+var output_movement_force : Vector2 = Vector2.ZERO
 
 # timers
 var timer_jump_held := 0.3
@@ -92,6 +93,7 @@ func _on_movement_state_physics_processing(delta: float) -> void:
 		# var correction: Vector2 = pid_normal.update(error, delta) 
 		var correction := Vector2.ZERO
 		correction.x = pid_new.update(delta, global_position.x, pid_target.global_position.x)
+		output_movement_force = correction * MOVE_SPEED
 		self.apply_central_impulse(correction * MOVE_SPEED) 
 
 
@@ -125,34 +127,32 @@ func _on_airborne_state_physics_processing(delta: float) -> void:
 func _on_heli_thrusting_state_physics_processing(delta: float) -> void:
 	# while thrusting in helicopter mode
 	if Input.is_action_pressed("space"):	
-		
+		# if Input.is_action_just_pressed("space") and self.linear_velocity.y < 0:
+		# 	self.apply_central_impulse(Vector2(0,-JUMP_SPEED)) # temp
 		pid_target.rotation = -rotation
+		# pid_target.position.x = 0 # temp
 		pid_target.position.y = -50
 		
-		var local_up : Vector2 = global_transform.y
-		# less force if sideways
-		local_up = pid_target.position * max(-local_up.dot(pid_target.position), 0)
-		self.apply_central_impulse(local_up * 0.01) 	
-				
-		# var input_y: float = Input.get_axis("down","up")		
-		#pid_target.position.x = (input_x * 20)
+		var local_up : Vector2 = -global_transform.y.normalized()
+		var direction : Vector2 = pid_target.position.normalized()
+		var dir_weight: float = max(local_up.dot(direction),0)
+		direction *= dir_weight
 
-		# convert position to angle
-		#var target_angle = (pid_target.global_position - global_position).angle_to(Vector2.DOWN)
-		#var my_angle = rotation
-		#
-		#var error_angle := 0.0
-		#error_angle = target_angle - my_angle
-#
-		#var error := Vector2.ZERO
-		#error = pid_target.global_position - global_position
-		#
-		## when to apply correction, including drag
-		#if error.length_squared() != 0:# or player.is_on_floor:
-			#pass
-			#var correction: Vector2 = pid_helicopter.update(error, delta) 
-			#correction.x = 0
-			#self.apply_central_impulse(correction) 
+		# less force if sideways
+		# local_up = pid_target.position  * max(-local_up.dot(pid_target.position), 0)
+		# self.apply_central_force(local_up * 1) 
+
+		# determine target velocity from distance to pid_target
+		var target_speed: float = -50.0 
+		var current_speed: float = self.linear_velocity.y
+		var thrust_force: float = pid_thruster.update(delta, current_speed, target_speed)
+		print("direction: ", direction)
+		print("force: ", thrust_force)
+
+		output_thrust_force = -direction * thrust_force
+		self.apply_central_force(-direction * thrust_force * 100)
+		# self.apply_central_force(Vector2(0,-1300.0)) # temp
+				
 	else:
 		pid_target.position = Vector2.ZERO
 		_state_chart.send_event("release")
@@ -166,10 +166,12 @@ func _on_thrusting_state_entered() -> void:
 
 func _on_thrusting_state_exited() -> void:
 	thruster.visible = false
+	self.output_thrust_force = Vector2.ZERO
+	self.pid_thruster.reset()
 	
 
 func _on_helicopter_state_entered() -> void:
-	lock_rotation = false
+	self.lock_rotation = false
 
 
 func _on_helicopter_state_exited() -> void:
@@ -187,7 +189,8 @@ func _on_heli_falling_state_physics_processing(delta: float) -> void:
 
 func _on_movement_state_entered() -> void:
 	self.rotation = 0
-	lock_rotation = true
+	pid_target.rotation = 0
+	self.lock_rotation = true
 	
 
 
@@ -195,9 +198,17 @@ func _on_helicopter_state_physics_processing(delta: float) -> void:
 	# stabilise rotation
 
 	var input_x: float = Input.get_axis("left","right")
+	
+	var too_bent: bool = self.rotation_degrees < -50 or self.rotation_degrees > 50
+	if input_x != 0 and too_bent: # dont go past
+		input_x = 0
+	pid_target.position.x = input_x * 10 # temp
 
-	var target_angle = input_x * 45
-	var current_angle = rotation_degrees	
-	var angular_output = pid_angle.update_angle(delta, current_angle, target_angle)
+	var current_angle = rotation_degrees # world space rotation?
+	var target_angle = (input_x * 45.0) # + current_angle # also world space rotation
+	
+	var angular_output: float = pid_angle.update_angle(delta, current_angle, target_angle)	
 
-	self.apply_torque(deg_to_rad(angular_output))
+	self.apply_torque(angular_output*100)	
+
+	

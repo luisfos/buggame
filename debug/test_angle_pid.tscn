@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3 uid="uid://bjhnfyr6uau16"]
+
+[ext_resource type="Script" path="res://debug/rigid_body_2d.gd" id="1_4n8g0"]
+[ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="1_e1rct"]
+[ext_resource type="PackedScene" uid="uid://5iyycjf467hk" path="res://debug/PIDchart.tscn" id="3_ftgve"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_82iwy"]
+size = Vector2(18, 56)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2(382, 344)
+rotation = 0.610865
+gravity_scale = 0.0
+linear_damp = 1.0
+angular_damp = 5.0
+script = ExtResource("1_4n8g0")
+pvec = Vector3(1.5, 0.005, 0.05)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+scale = Vector2(6, 6)
+shape = SubResource("RectangleShape2D_82iwy")
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D/CollisionShape2D"]
+scale = Vector2(0.125, 0.4375)
+texture = ExtResource("1_e1rct")
+
+[node name="CanvasLayer_BR" type="CanvasLayer" parent="."]
+
+[node name="PIDchart" parent="CanvasLayer_BR" node_paths=PackedStringArray("node") instance=ExtResource("3_ftgve")]
+clip_contents = true
+custom_minimum_size = Vector2(200, 200)
+anchors_preset = -1
+anchor_left = 0.910937
+anchor_top = 0.91875
+offset_left = -528.0
+offset_top = -324.0
+grow_horizontal = 0
+grow_vertical = 0
+node = NodePath("../../RigidBody2D")
+property = "pid_angle"
+data_bounds = 50.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(200, 100)
+offset_left = 849.0
+offset_top = 316.0
+offset_right = 1049.0
+offset_bottom = 416.0
+text = "reset current angle"
+
+[node name="lbl_target" type="Label" parent="."]
+offset_left = 894.0
+offset_top = 114.0
+offset_right = 1005.0
+offset_bottom = 137.0
+text = "target angle: 0"
+
+[connection signal="pressed" from="Button" to="RigidBody2D" method="_on_button_pressed"]

@@ -26,6 +26,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:    
 	lbl_parms.text = ""	
+	
+	lbl_parms.text += "FPS: "+str(Engine.get_frames_per_second())+"\n"
 	for property in properties:
 		lbl_parms.text += get_property_string(node01, property) + "\n"  
 		

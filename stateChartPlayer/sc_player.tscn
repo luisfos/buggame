@@ -1,10 +1,11 @@
-[gd_scene load_steps=16 format=3 uid="uid://b6aecx83y0k5h"]
+[gd_scene load_steps=17 format=3 uid="uid://b6aecx83y0k5h"]
 
 [ext_resource type="Script" path="res://stateChartPlayer/scripts/sc_player.gd" id="1_kseyb"]
 [ext_resource type="Texture2D" uid="uid://o21dwtw5pna5" path="res://assets/Player Placeholder.png" id="2_6qet5"]
 [ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="2_kup3f"]
 [ext_resource type="Script" path="res://player/states/state_machine.gd" id="3_ydl1o"]
 [ext_resource type="Script" path="res://player/states/movement.gd" id="4_0yctg"]
+[ext_resource type="Script" path="res://stateChartPlayer/scripts/debug_player.gd" id="4_chepg"]
 [ext_resource type="Script" path="res://player/states/pinball.gd" id="5_m15dg"]
 [ext_resource type="Script" path="res://player/states/jump.gd" id="6_4xep7"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/state_chart.gd" id="6_j3523"]
@@ -70,6 +71,7 @@ anti_aliasing_size = 0.01
 physics_material_override = SubResource("PhysicsMaterial_krfwo")
 contact_monitor = true
 max_contacts_reported = 1
+angular_damp = 5.0
 script = ExtResource("1_kseyb")
 
 [node name="pinballCol" type="CollisionShape2D" parent="."]
@@ -125,22 +127,18 @@ text = "Rigid"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Control" type="Control" parent="."]
-visible = false
+[node name="Debug" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("4_chepg")
 
-[node name="stateVis" type="Panel" parent="Control"]
+[node name="stateVis" type="Panel" parent="Debug"]
 layout_direction = 1
 layout_mode = 1
 anchors_preset = 8
@@ -155,6 +153,16 @@ offset_bottom = 10.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_m0nq6")
+
+[node name="line_thrust" type="RayCast2D" parent="Debug"]
+enabled = false
+target_position = Vector2(50, 50)
+collide_with_bodies = false
+
+[node name="line_movement" type="RayCast2D" parent="Debug"]
+enabled = false
+target_position = Vector2(50, -50)
+collide_with_bodies = false
 
 [node name="state_machine" type="Node" parent="."]
 process_mode = 4

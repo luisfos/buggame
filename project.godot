@@ -13,6 +13,7 @@ config_version=5
 config/name="bug game"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
+boot_splash/fullsize=false
 config/icon="res://icon.svg"
 
 [autoload]
@@ -24,6 +25,7 @@ PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_came
 window/size/viewport_width=1280
 window/size/viewport_height=960
 window/size/resizable=false
+window/size/always_on_top=true
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 

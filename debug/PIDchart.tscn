@@ -58,7 +58,7 @@ label_settings = SubResource("LabelSettings_ytkek")
 
 [node name="info" type="Label" parent="MarginContainer/HBoxContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 0
 size_flags_vertical = 6
 theme_override_constants/line_spacing = 10
 text = "P: 1.0

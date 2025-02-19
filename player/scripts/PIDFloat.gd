@@ -19,6 +19,7 @@ var derivative_measurement: DerivativeMeasurement
 # Internal state
 var value_last: float = 0.0
 var error_last: float = 0.0
+var target_last: float = 0.0 # only for debugging, not used internally
 var result_last: float = 0.0
 var integration_stored: float = 0.0
 var velocity: float = 0.0  # Used for debugging/monitoring
@@ -52,6 +53,7 @@ func update(dt: float, current_value: float, target_value: float) -> float:
         push_error("Delta time (dt) must be greater than zero.")
         return 0.0
 
+    target_last = target_value
     var error = target_value - current_value
 
     # Proportional term
@@ -87,16 +89,23 @@ func update(dt: float, current_value: float, target_value: float) -> float:
     return clamp(result, output_min, output_max)
 
 # Angle difference calculation (keeps angles within [-π, π] range)
-func angle_difference(a: float, b: float) -> float:
-    return fmod(a - b + PI, 2 * PI) - PI
+# careful theres a builtin called angle_difference
+func angle_difference_degree(a: float, b: float) -> float:        
+    return int(a - b + 540.0) % 360 - 180   #calculate modular difference, and remap to [-180, 180]
+    # return fmod(a - b + 180, 360) - 180
+    # return fmod(a - b + PI, 2 * PI) - PI
 
-# Angular PID update for rotation control
+# Angular PID update for rotation control in degrees
 func update_angle(dt: float, current_angle: float, target_angle: float) -> float:
     if dt <= 0:
         push_error("Delta time (dt) must be greater than zero.")
         return 0.0
 
-    var error = angle_difference(target_angle, current_angle)
+    # print("current: ", current_angle)
+    # print("target: ", target_angle)
+    target_last = target_angle
+    var error = angle_difference_degree(target_angle, current_angle)
+    # print("error: ", error)
 
     # Proportional term
     var P = _p * error
@@ -106,10 +115,10 @@ func update_angle(dt: float, current_angle: float, target_angle: float) -> float
     var I = _i * integration_stored
 
     # Derivative term calculations
-    var error_rate_of_change = angle_difference(error, error_last) / dt
+    var error_rate_of_change = angle_difference_degree(error, error_last) / dt
     error_last = error
 
-    var value_rate_of_change = angle_difference(current_angle, value_last) / dt
+    var value_rate_of_change = angle_difference_degree(current_angle, value_last) / dt
     value_last = current_angle
     velocity = value_rate_of_change
 

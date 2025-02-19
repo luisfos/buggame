@@ -110,6 +110,7 @@ position = Vector2(15, -136)
 rotation = 0.000391954
 script = ExtResource("2_lu41j")
 follow_mode = 1
+zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_dshuq")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
@@ -134,6 +135,7 @@ texture = SubResource("AtlasTexture_je7cg")
 [node name="MainCam2D" type="Camera2D" parent="."]
 position = Vector2(15, -136)
 rotation = 0.000391954
+zoom = Vector2(2, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCam2D"]
 process_priority = 300
@@ -146,7 +148,7 @@ position = Vector2(-167, -263)
 [node name="DebugCanvas" type="CanvasLayer" parent="." node_paths=PackedStringArray("node01")]
 script = ExtResource("6_tosv5")
 node01 = NodePath("../PlayerMix")
-properties = Array[String](["linearVelocity", "position", "_is_on_floor"])
+properties = Array[String](["linear_velocity", "position", "_is_on_floor", "rotation_degrees"])
 
 [node name="PanelContainer" type="PanelContainer" parent="DebugCanvas"]
 offset_right = 2.0
@@ -173,17 +175,12 @@ text = "Debug info:"
 [node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "linearVelocity : <null>
+text = "FPS: 112
+linear_velocity : (0.0,0.0)
 position : (-167.0,-263.0)
 _is_on_floor : <null>
+rotation_degrees : 0.000
 "
-
-[node name="StateChartDebugger" parent="." instance=ExtResource("7_88kkb")]
-offset_left = 298.0
-offset_top = -609.0
-offset_right = 649.0
-offset_bottom = -257.0
-initial_node_to_watch = NodePath("../PlayerMix")
 
 [node name="CanvasLayer_BR" type="CanvasLayer" parent="."]
 
@@ -199,4 +196,19 @@ grow_horizontal = 0
 grow_vertical = 0
 node = NodePath("../../PlayerMix")
 property = "current_pid"
-data_bounds = 200.0
+max_points = 400
+data_bounds = 45.0
+metadata/_edit_use_anchors_ = true
+
+[node name="CanvasLayer_TR" type="CanvasLayer" parent="."]
+
+[node name="StateChartDebugger" parent="CanvasLayer_TR" instance=ExtResource("7_88kkb")]
+custom_minimum_size = Vector2(300, 300)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_bottom = 0.0
+offset_left = -18.0
+offset_bottom = 50.0
+grow_horizontal = 0
+grow_vertical = 1
+initial_node_to_watch = NodePath("../../PlayerMix")
