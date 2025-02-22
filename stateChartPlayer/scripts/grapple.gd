@@ -17,8 +17,8 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	create_polyline(20, objStatic, objDynamic, objStatic.global_position+Vector2(40,40), objDynamic.global_position)
 	
-	create_polyline(3, objStatic, objDynamic, objStatic.global_position, objDynamic.global_position)
 	
 
 func _process(delta: float) -> void:
@@ -37,19 +37,16 @@ func create_polyline(segments: int, pinA: PhysicsBody2D, pinB: PhysicsBody2D, po
 	# create number of rigidbody segements
 	# create pin start & pin end
 	
-	# remove all children from rope_grp
-	# rope_grp.clear()
 	for child in container.get_children():
 		container.remove_child(child)	
 
 	var previous_body = pinA	
 	var segment_length: float = (posB - posA).length() / segments
+	
+	var angle: float = (posB - posA).angle()
+	var my_transform = Transform2D(0, posA)
+	my_transform = my_transform.rotated((posB-posA).angle())
 
-	# var collision = CollisionShape2D.new()
-	# collision.shape = SegmentShape2D.new()	
-	# collision.shape.a = Vector2.ZERO
-	# collision.shape.b = Vector2(segment_length, 0) # pos x axis is 0 angle
-	print(segment_length)
 
 	for i in range(segments):
 		# var segment = RigidBody2D.new()
@@ -60,40 +57,41 @@ func create_polyline(segments: int, pinA: PhysicsBody2D, pinB: PhysicsBody2D, po
 		new_shape.a = Vector2.ZERO
 		new_shape.b = Vector2(segment_length, 0)
 		colshape.shape = new_shape
-		segment.add_child(colshape)
-		# var shape: CollisionShape2D = _shape.duplicate()
-		# print(shape)
-		# shape.shape.b.x = segment_length# = Vector2(segment_length, 0)
-		# segment.add_child(shape)		
-		# segment.set_process(true)
-		
-		# segment.get_child(0).shape.b = Vector2(segment_length, 0)
+		segment.add_child(colshape)		
 		segment.position.x = segment_length * i
 		
 		container.add_child(segment)		
 		
 		var pin_joint: PinJoint2D = _pin.duplicate()		
 		pin_joint.position.x = segment_length * i
-		pin_joint.node_a = previous_body.get_path()
-		pin_joint.node_b = segment.get_path()
 		container.add_child(pin_joint)
 
 		segment.process_mode = Node.PROCESS_MODE_INHERIT
 		colshape.process_mode = Node.PROCESS_MODE_INHERIT
 		pin_joint.process_mode = Node.PROCESS_MODE_INHERIT
 
+		pin_joint.transform = pin_joint.transform.rotated(angle).translated(posA)
+		segment.transform = segment.transform.rotated(angle).translated(posA)				 
+		
+		# connect at end
+		pin_joint.node_a = previous_body.get_path()
+		pin_joint.node_b = segment.get_path()
+		segment.freeze = false
 		previous_body = segment
 
-	# var end_pin_joint = PinJoint2D.new()
-	var end_pin_joint: PinJoint2D = _pin.duplicate()
-	end_pin_joint.position.x = segment_length * segments
-	end_pin_joint.node_a = previous_body.get_path()
-	end_pin_joint.node_b = pinB.get_path()
-	end_pin_joint.process_mode = Node.PROCESS_MODE_INHERIT
-	container.add_child(end_pin_joint)
+	
+	if true:
+		var end_pin_joint: PinJoint2D = _pin.duplicate()
+		end_pin_joint.position.x = segment_length * segments
+		end_pin_joint.process_mode = Node.PROCESS_MODE_INHERIT
+		container.add_child(end_pin_joint)
+		
+		end_pin_joint.transform = end_pin_joint.transform.rotated(angle).translated(posA)
 
-	container.position = posA
-	container.rotation = (posB - posA).angle()
+		end_pin_joint.node_a = previous_body.get_path()
+		end_pin_joint.node_b = pinB.get_path()
+
+	
 
 
 func catmull_rom_spline(_points: Array, resolution: int = 10, extrapolate_end_points = true) -> PackedVector2Array:

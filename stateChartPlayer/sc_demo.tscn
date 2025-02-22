@@ -175,7 +175,7 @@ text = "Debug info:"
 [node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "FPS: 108
+text = "FPS: 31
 linear_velocity : (0.0,0.0)
 position : (-167.0,-263.0)
 _is_on_floor : <null>
