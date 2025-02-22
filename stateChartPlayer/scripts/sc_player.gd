@@ -27,9 +27,8 @@ var _state_chart = $StateChart
 # persisting variables, maybe prefix with _?
 var _is_on_floor : bool = false
 var current_state : String = "" # is this used?
-# var pid_normal := PID_2D.new(1.0, 0.0, 0.1, TERMINAL_SPEED*10) 
-# var pid_new := PIDFloat.new(1.0, 0.0, 0.1, VELOCITY)
-var pid_new = PIDFloat.new(1.0, 0.5, 0.1,
+
+var pid_movement = PIDFloat.new(1.0, 0.5, 0.1,
 				-TERMINAL_SPEED, TERMINAL_SPEED,
 				10.0, PIDFloat.DerivativeMeasurement.VELOCITY)
 
@@ -62,7 +61,6 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	update_is_on_floor()
 	
-
 		
 func update_is_on_floor() -> bool:	
 	rayAnchor.rotation = -rotation	
@@ -81,8 +79,7 @@ func update_is_on_floor() -> bool:
 	return _is_on_floor
 	
 	
-
-func _on_movement_state_physics_processing(delta: float) -> void:
+func _on_movement_state_physics_processing(delta: float) -> void:	
 	var input_x: float = Input.get_axis("left","right")		
 	pid_target.position.x = (input_x * 40)
 	var error := Vector2.ZERO
@@ -92,12 +89,13 @@ func _on_movement_state_physics_processing(delta: float) -> void:
 	if error.length_squared() != 0:# or player.is_on_floor:
 		# var correction: Vector2 = pid_normal.update(error, delta) 
 		var correction := Vector2.ZERO
-		correction.x = pid_new.update(delta, global_position.x, pid_target.global_position.x)
+		correction.x = pid_movement.update(delta, global_position.x, pid_target.global_position.x)
 		output_movement_force = correction * MOVE_SPEED
 		self.apply_central_impulse(correction * MOVE_SPEED) 
 
 
 func _on_grounded_state_physics_processing(delta: float) -> void:
+	
 	if Input.is_action_just_released("space"):
 		_is_on_floor = false
 		self.apply_central_impulse(Vector2(0,-JUMP_SPEED))		
@@ -109,6 +107,7 @@ func _on_grounded_state_physics_processing(delta: float) -> void:
 
 
 func _on_airborne_state_physics_processing(delta: float) -> void:
+	print("on airborne ", Time.get_ticks_msec()) 
 	# check if jump held, if so, go to helicopter state
 	if Input.is_action_pressed("space"):
 		timer_jump_held -= delta
@@ -126,11 +125,8 @@ func _on_airborne_state_physics_processing(delta: float) -> void:
 
 func _on_heli_thrusting_state_physics_processing(delta: float) -> void:
 	# while thrusting in helicopter mode
-	if Input.is_action_pressed("space"):	
-		# if Input.is_action_just_pressed("space") and self.linear_velocity.y < 0:
-		# 	self.apply_central_impulse(Vector2(0,-JUMP_SPEED)) # temp
-		pid_target.rotation = -rotation
-		# pid_target.position.x = 0 # temp
+	if Input.is_action_pressed("space"):			
+		pid_target.rotation = -rotation		
 		pid_target.position.y = -50
 		
 		var local_up : Vector2 = -global_transform.y.normalized()
@@ -146,8 +142,8 @@ func _on_heli_thrusting_state_physics_processing(delta: float) -> void:
 		var target_speed: float = -50.0 
 		var current_speed: float = self.linear_velocity.y
 		var thrust_force: float = pid_thruster.update(delta, current_speed, target_speed)
-		print("direction: ", direction)
-		print("force: ", thrust_force)
+		# print("direction: ", direction)
+		# print("force: ", thrust_force)
 
 		output_thrust_force = -direction * thrust_force
 		self.apply_central_force(-direction * thrust_force * 100)
@@ -212,3 +208,8 @@ func _on_helicopter_state_physics_processing(delta: float) -> void:
 	self.apply_torque(angular_output*100)	
 
 	
+
+
+func _on_movement_state_exited() -> void:
+	self.pid_movement.reset()
+	self.output_movement_force = Vector2.ZERO

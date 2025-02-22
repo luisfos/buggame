@@ -1,0 +1,113 @@
+[gd_scene load_steps=6 format=3 uid="uid://p5au83bhdo7k"]
+
+[ext_resource type="Script" path="res://stateChartPlayer/scripts/grapple.gd" id="1_1c681"]
+[ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="1_rio05"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gyypb"]
+size = Vector2(128, 128)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b3ghf"]
+radius = 64.0
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_7s0wl"]
+b = Vector2(100, 0)
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_1c681")
+
+[node name="block" type="StaticBody2D" parent="."]
+position = Vector2(597, 529)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="block"]
+texture = ExtResource("1_rio05")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="block"]
+shape = SubResource("RectangleShape2D_gyypb")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(606, 140)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
+texture = ExtResource("1_rio05")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_gyypb")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2(960, 343)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CircleShape2D_b3ghf")
+
+[node name="container" type="Node2D" parent="."]
+
+[node name="_seg" type="RigidBody2D" parent="."]
+process_mode = 4
+collision_layer = 0
+collision_mask = 0
+
+[node name="_shape" type="CollisionShape2D" parent="."]
+process_mode = 4
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="_pin" type="PinJoint2D" parent="."]
+process_mode = 4
+
+[node name="bin" type="Node2D" parent="."]
+process_mode = 4
+visible = false
+
+[node name="rope" type="Node2D" parent="bin"]
+process_mode = 4
+position = Vector2(662, 197)
+rotation = -1.16679
+
+[node name="segment01" type="RigidBody2D" parent="bin/rope"]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bin/rope/segment01"]
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="segment02" type="RigidBody2D" parent="bin/rope"]
+position = Vector2(0, 100)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bin/rope/segment02"]
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="segment03" type="RigidBody2D" parent="bin/rope"]
+position = Vector2(0, 200)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bin/rope/segment03"]
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="pinStart" type="PinJoint2D" parent="bin/rope"]
+
+[node name="pin01" type="PinJoint2D" parent="bin/rope"]
+position = Vector2(0, 100)
+
+[node name="pin02" type="PinJoint2D" parent="bin/rope"]
+position = Vector2(0, 200)
+
+[node name="pinEnd" type="PinJoint2D" parent="bin/rope"]
+position = Vector2(1.52588e-05, 300)
+
+[node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="bin"]
+position = Vector2(668, 127)
+rotation = -1.13446
+length = 290.0
+rest_length = 5.0
+
+[node name="ColorRect" type="ColorRect" parent="bin/DampedSpringJoint2D"]
+offset_left = -4.0
+offset_right = 4.0
+offset_bottom = 351.0
+color = Color(1, 0.556863, 1, 0.407843)
+
+[node name="Line2D" type="Line2D" parent="bin"]

@@ -221,6 +221,12 @@ to = NodePath("../../Grounded")
 event = &"grounded"
 delay_in_seconds = "0.0"
 
+[node name="to_grapple" type="Node" parent="StateChart/Root/Movement"]
+script = ExtResource("11_p3fge")
+to = NodePath("../../Grapple/Connected")
+event = &"grapple"
+delay_in_seconds = "0.0"
+
 [node name="Helicopter" type="Node" parent="StateChart/Root"]
 script = ExtResource("7_4c5p3")
 initial_state = NodePath("Thrusting")
@@ -250,7 +256,22 @@ to = NodePath("../../../Movement/Grounded")
 event = &"grounded"
 delay_in_seconds = "0.0"
 
+[node name="Grapple" type="Node" parent="StateChart/Root"]
+script = ExtResource("7_4c5p3")
+initial_state = NodePath("Connected")
+
+[node name="Connected" type="Node" parent="StateChart/Root/Grapple"]
+script = ExtResource("9_b1co7")
+
+[node name="Falling" type="Node" parent="StateChart/Root/Grapple"]
+script = ExtResource("9_b1co7")
+
+[node name="rope_ray" type="RayCast2D" parent="."]
+position = Vector2(0, -9)
+target_position = Vector2(0, -20)
+
 [connection signal="state_entered" from="StateChart/Root/Movement" to="." method="_on_movement_state_entered"]
+[connection signal="state_exited" from="StateChart/Root/Movement" to="." method="_on_movement_state_exited"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement" to="." method="_on_movement_state_physics_processing"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="_on_grounded_state_physics_processing"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="_on_airborne_state_physics_processing"]
