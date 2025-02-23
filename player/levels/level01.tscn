@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://g310snisp1fr"]
+
+[ext_resource type="PackedScene" uid="uid://b6aecx83y0k5h" path="res://stateChartPlayer/sc_player.tscn" id="1_0tj2j"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_mm1lb"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_ljj06"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_bji8d"]
+[ext_resource type="PackedScene" uid="uid://bwm4k0wnknivc" path="res://assets/Polygon_Land/Polygon_Land.tscn" id="5_nbpx7"]
+
+[sub_resource type="Resource" id="Resource_wl1wm"]
+script = ExtResource("4_bji8d")
+duration = 1.0
+transition = 0
+ease = 2
+
+[node name="Node2D" type="Node2D"]
+
+[node name="PlayerMix" parent="." instance=ExtResource("1_0tj2j")]
+position = Vector2(0, -429)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(1, 50)
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("2_mm1lb")
+
+[node name="PhantomCamera2D" type="Node2D" parent="."]
+position = Vector2(1, 50)
+script = ExtResource("3_ljj06")
+tween_resource = SubResource("Resource_wl1wm")
+follow_offset = Vector2(1, 50)
+follow_damping = true
+follow_damping_value = Vector2(0.2, 0.2)
+
+[node name="PolygonLand" parent="." instance=ExtResource("5_nbpx7")]
+
+[node name="Polygon2D" parent="PolygonLand" index="0"]
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-78, -482, -78, -387, -354, -384, -352, -168, -88, -168, -90, -138, -354, -138, -348, 429, 318, 429, 316, -122, 129, 80, 115, 64, 90, 71, 288, -154, 323, -154, 288, -175, 318, -186, 320, -384, 83, -385, 65, -355, 65, -492, 797, -492, 788, 575, -755, 580, -737, -507)
+
+[editable path="PolygonLand"]
