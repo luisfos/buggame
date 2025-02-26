@@ -125,13 +125,6 @@ text = "Debug info:"
 [node name="lbl_parms" type="Label" parent="DebugCanvas/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "velocity : (0.0,0.0)
-current_state : <null>
-bullet_time_input_count : <null>
-pinball_on_floor : <null>
-gravity_scale : <null>
-current_grav_mult : <null>
-"
 
 [node name="bin" type="Node" parent="."]
 process_mode = 4
