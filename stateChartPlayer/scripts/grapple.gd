@@ -12,28 +12,114 @@ extends Node2D
 @onready var _pin: PinJoint2D = $_pin
 @onready var _shape: CollisionShape2D = $_shape
 
+@onready var spring: Node2D = $spring
+@onready var new_spring: Node2D = $new_spring
 
 # next make a normal pinjoint + segment system, fuck this damped spring node
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	create_polyline(20, objStatic, objDynamic, objStatic.global_position+Vector2(40,40), objDynamic.global_position)
-	
+	#create_polyline(20, objStatic, objDynamic, objStatic.global_position+Vector2(40,40), objDynamic.global_position)
+	pass
 	
 
 func _process(delta: float) -> void:
-	pass
-	
-	# queue_redraw()  # Forces redraw
+	queue_redraw()  # Forces redraw
+	pass	
 
 func _draw():
-	pass
-	# if rope_points.size() > 1:
-	# 	draw_polyline(rope_points, Color.WHITE, 2.0)
-		
+	# draw line from each pin point inside container
+	draw_rope()
+	draw_spring()
+	
+func draw_rope() -> void:
+	var points = []
+	for segment in container.get_children():
+		if segment is RigidBody2D:
+			points.append(segment.global_position)
+	
+	if points.size() > 4:
+		var smooth_points = catmull_rom_spline(points)
+		draw_polyline(smooth_points, Color.WHITE, 2.0)
+
+func draw_spring() -> void:
+	var points = []
+	for child in spring.get_children():
+		pass
+		# if child is RigidBody2D
+		# if child is DampedSpringJoint2D:			
+		# 	print(child.global_position)
+		# 	points.append(child.global_position)
+	
+	if points.size() > 2:
+		# var smooth_points = catmull_rom_spline(points)
+		var smooth_points = points
+		draw_polyline(smooth_points, Color.WHITE, 2.0)
+
+
 
 # function to initialize the rope
 func create_polyline(segments: int, pinA: PhysicsBody2D, pinB: PhysicsBody2D, posA: Vector2, posB: Vector2) -> void:
+	# create number of rigidbody segements
+	# create pin start & pin end
+	
+	for child in new_spring.get_children():
+		new_spring.remove_child(child)	
+
+	var previous_body = pinA	
+	var segment_length: float = (posB - posA).length() / segments
+	
+	var angle: float = (posB - posA).angle()
+	var my_transform = Transform2D(0, posA)
+	my_transform = my_transform.rotated((posB-posA).angle())
+
+	var rest_length = segment_length * .5
+
+
+	for i in range(segments):	
+		var segment: RigidBody2D = _seg.duplicate()		
+		var colshape: CollisionShape2D = CollisionShape2D.new()
+		var new_shape = SegmentShape2D.new()
+		new_shape.a = Vector2.ZERO
+		new_shape.b = Vector2(segment_length, 0)
+		colshape.shape = new_shape
+		segment.add_child(colshape)		
+		segment.position.x = segment_length * i
+		
+		container.add_child(segment)		
+		
+		var pin_joint: PinJoint2D = _pin.duplicate()		
+		pin_joint.position.x = segment_length * i
+		container.add_child(pin_joint)
+
+		segment.process_mode = Node.PROCESS_MODE_INHERIT
+		colshape.process_mode = Node.PROCESS_MODE_INHERIT
+		pin_joint.process_mode = Node.PROCESS_MODE_INHERIT
+
+		pin_joint.transform = pin_joint.transform.rotated(angle).translated(posA)
+		segment.transform = segment.transform.rotated(angle).translated(posA)				 
+		
+		# connect at end
+		pin_joint.node_a = previous_body.get_path()
+		pin_joint.node_b = segment.get_path()
+		segment.freeze = false
+		previous_body = segment
+
+	
+	if true:
+		var end_pin_joint: PinJoint2D = _pin.duplicate()
+		end_pin_joint.position.x = segment_length * segments
+		end_pin_joint.process_mode = Node.PROCESS_MODE_INHERIT
+		container.add_child(end_pin_joint)
+		
+		end_pin_joint.transform = end_pin_joint.transform.rotated(angle).translated(posA)
+
+		end_pin_joint.node_a = previous_body.get_path()
+		end_pin_joint.node_b = pinB.get_path()
+
+
+
+func create_springline(segments: int, pinA: PhysicsBody2D, pinB: PhysicsBody2D, posA: Vector2, posB: Vector2) -> void:
 	# create number of rigidbody segements
 	# create pin start & pin end
 	

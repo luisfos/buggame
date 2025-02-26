@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://p5au83bhdo7k"]
+[gd_scene load_steps=8 format=3 uid="uid://p5au83bhdo7k"]
 
 [ext_resource type="Script" path="res://stateChartPlayer/scripts/grapple.gd" id="1_1c681"]
 [ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="1_rio05"]
+[ext_resource type="Script" path="res://stateChartPlayer/scripts/line_grapple.gd" id="3_6vl37"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gyypb"]
 size = Vector2(128, 128)
@@ -9,8 +10,11 @@ size = Vector2(128, 128)
 [sub_resource type="CircleShape2D" id="CircleShape2D_b3ghf"]
 radius = 64.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_qhtwc"]
+radius = 32.0
+
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_7s0wl"]
-b = Vector2(100, 0)
+b = Vector2(0, 20)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_1c681")
@@ -27,12 +31,15 @@ shape = SubResource("RectangleShape2D_gyypb")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(606, 140)
+rotation = 0.436332
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
+modulate = Color(1, 0, 0.72549, 1)
 texture = ExtResource("1_rio05")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+visible = false
 shape = SubResource("RectangleShape2D_gyypb")
 
 [node name="RigidBody2D" type="RigidBody2D" parent="."]
@@ -40,6 +47,18 @@ position = Vector2(1182, 447)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
 shape = SubResource("CircleShape2D_b3ghf")
+
+[node name="ball02" type="RigidBody2D" parent="."]
+position = Vector2(439, 261)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ball02"]
+shape = SubResource("CircleShape2D_qhtwc")
+
+[node name="ball03" type="RigidBody2D" parent="."]
+position = Vector2(788, 469)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ball03"]
+shape = SubResource("CircleShape2D_qhtwc")
 
 [node name="container" type="Node2D" parent="."]
 
@@ -62,6 +81,57 @@ process_mode = 4
 
 [node name="spring" type="Node2D" parent="."]
 visible = false
+position = Vector2(546, 197)
+rotation = 1.03034
 
-[node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="spring"]
-position = Vector2(548, 201)
+[node name="spring01" type="DampedSpringJoint2D" parent="spring"]
+node_a = NodePath("../../StaticBody2D")
+node_b = NodePath("../seg01")
+length = 20.0
+rest_length = 20.0
+stiffness = 64.0
+
+[node name="spring02" type="DampedSpringJoint2D" parent="spring"]
+position = Vector2(0, 40)
+node_a = NodePath("../seg01")
+node_b = NodePath("../seg02")
+length = 20.0
+rest_length = 20.0
+stiffness = 64.0
+
+[node name="spring03" type="DampedSpringJoint2D" parent="spring"]
+position = Vector2(0, 80)
+node_a = NodePath("../seg02")
+node_b = NodePath("../../ball02")
+length = 20.0
+rest_length = 20.0
+stiffness = 64.0
+
+[node name="seg01" type="RigidBody2D" parent="spring"]
+position = Vector2(0, 20)
+mass = 0.2
+
+[node name="segshape" type="CollisionShape2D" parent="spring/seg01"]
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="seg02" type="RigidBody2D" parent="spring"]
+position = Vector2(0, 60)
+mass = 0.2
+
+[node name="segshape" type="CollisionShape2D" parent="spring/seg02"]
+shape = SubResource("SegmentShape2D_7s0wl")
+
+[node name="new_spring" type="Node2D" parent="."]
+
+[node name="Line2D" type="Line2D" parent="." node_paths=PackedStringArray("objA", "objB")]
+points = PackedVector2Array(648, 191, 780, 449)
+width = 3.0
+antialiased = true
+script = ExtResource("3_6vl37")
+objA = NodePath("../StaticBody2D")
+objB = NodePath("../ball03")
+num_segments = 4
+target_length_ratio = 1.0
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(59.3, 29.09)
