@@ -2,9 +2,11 @@ extends Line2D
 
 @export var objA: PhysicsBody2D
 @export var objB: PhysicsBody2D
+@export var mass: float = 0.05
 
 @export var num_segments: int
-@export var target_length_ratio: float
+@export_range(0.0, 1.0, 0.01, "or_greater") var target_length_ratio: float : set=set_target_length_ratio
+@export_range(0.01, 1000.0, 0.1, "or_greater") var stiffness: float = 64.0 : set=set_stiffness
 
 var bodies: Array = []
 var is_created = false
@@ -16,6 +18,18 @@ var offsetB := Vector2.ZERO
 func _ready() -> void:
 	# ensure size == 2		
 	create_rope()
+
+func set_target_length_ratio(value: float) -> void:	
+	target_length_ratio = value
+	for child in get_children():
+		if child is DampedSpringJoint2D:
+			child.rest_length = child.length * target_length_ratio
+
+func set_stiffness(value: float) -> void:	
+	stiffness = value
+	for child in get_children():
+		if child is DampedSpringJoint2D:
+			child.stiffness = value
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -46,19 +60,21 @@ func create_rope() -> void:
 	shape.radius = 5
 
 	for i in range(num_segments):
-		# make pin then make rigidbody sphere
-		print("i this many times:", i)
+		# make pin then make rigidbody sphere		
 		var joint = DampedSpringJoint2D.new()	
 		joint.transform = segment_transform.translated_local(Vector2(i*segment_length, 0))	
 		joint.rotate(-PI*.5)
+		joint.damping = 0.1
 		joint.length = segment_length
 		joint.rest_length = segment_length * target_length_ratio		
-		joint.stiffness = 64.0
+		joint.stiffness = self.stiffness
 		self.add_child(joint)
 		joint.node_a = previous_body.get_path()
 
 		if i < num_segments - 1:
-			var body = RigidBody2D.new()		
+			var body = RigidBody2D.new()	
+			body.mass = self.mass
+			body.linear_damp = 1.0
 			# body.freeze = true
 			body.transform = segment_transform.translated_local(Vector2((i+1)*segment_length, 0))
 
@@ -138,3 +154,6 @@ func catmull_rom_spline(_points: Array, resolution: int = 10, extrapolate_end_po
 			smooth_points.append(q)
 
 	return smooth_points
+
+
+	

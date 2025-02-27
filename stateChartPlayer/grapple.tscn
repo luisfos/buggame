@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://p5au83bhdo7k"]
+[gd_scene load_steps=9 format=3 uid="uid://p5au83bhdo7k"]
 
 [ext_resource type="Script" path="res://stateChartPlayer/scripts/grapple.gd" id="1_1c681"]
 [ext_resource type="Texture2D" uid="uid://dyuu2c61q6bpd" path="res://icon.svg" id="1_rio05"]
 [ext_resource type="Script" path="res://stateChartPlayer/scripts/line_grapple.gd" id="3_6vl37"]
+[ext_resource type="Script" path="res://stateChartPlayer/scripts/click_drag.gd" id="3_yeqad"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gyypb"]
 size = Vector2(128, 128)
@@ -32,6 +33,8 @@ shape = SubResource("RectangleShape2D_gyypb")
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(606, 140)
 rotation = 0.436332
+input_pickable = true
+script = ExtResource("3_yeqad")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
@@ -130,8 +133,12 @@ antialiased = true
 script = ExtResource("3_6vl37")
 objA = NodePath("../StaticBody2D")
 objB = NodePath("../ball03")
-num_segments = 4
-target_length_ratio = 1.0
+num_segments = 10
+target_length_ratio = 0.31
+stiffness = 29.01
 
 [node name="Node2D" type="Node2D" parent="."]
 position = Vector2(59.3, 29.09)
+
+[connection signal="mouse_entered" from="StaticBody2D" to="StaticBody2D" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="StaticBody2D" to="StaticBody2D" method="_on_mouse_exited"]
