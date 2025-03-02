@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc5tdu3l702qw"]
+
+[ext_resource type="Script" path="res://assets/Polygon_Platform/polygon_platform.gd" id="1_cbwu6"]
+
+[node name="PolygonPlatform" type="StaticBody2D"]
+script = ExtResource("1_cbwu6")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]

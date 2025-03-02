@@ -6,6 +6,7 @@ extends StaticBody2D
 func _ready() -> void:
 	if not Engine.is_editor_hint():
 		var coll := CollisionPolygon2D.new()
+		coll.one_way_collision = true
 		coll.polygon = $Polygon2D.polygon
 		coll.transform = $Polygon2D.transform
 		add_child(coll)

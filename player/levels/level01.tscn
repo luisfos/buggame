@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://g310snisp1fr"]
+[gd_scene load_steps=8 format=3 uid="uid://g310snisp1fr"]
 
 [ext_resource type="PackedScene" uid="uid://b6aecx83y0k5h" path="res://stateChartPlayer/sc_player.tscn" id="1_0tj2j"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_mm1lb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_ljj06"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_bji8d"]
 [ext_resource type="PackedScene" uid="uid://bwm4k0wnknivc" path="res://assets/Polygon_Land/Polygon_Land.tscn" id="5_nbpx7"]
+[ext_resource type="PackedScene" uid="uid://dc5tdu3l702qw" path="res://assets/Polygon_Platform/Polygon_Platform.tscn" id="6_03w6o"]
 
 [sub_resource type="Resource" id="Resource_wl1wm"]
 script = ExtResource("4_bji8d")
@@ -15,19 +16,23 @@ ease = 2
 [node name="Node2D" type="Node2D"]
 
 [node name="PlayerMix" parent="." instance=ExtResource("1_0tj2j")]
-position = Vector2(0, -429)
+position = Vector2(0, -52)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(1, 50)
+physics_interpolation_mode = 1
+position = Vector2(1, -2)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("2_mm1lb")
 
-[node name="PhantomCamera2D" type="Node2D" parent="."]
-position = Vector2(1, 50)
+[node name="PhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
+top_level = true
+position = Vector2(1, -2)
 script = ExtResource("3_ljj06")
+follow_mode = 2
+follow_target = NodePath("../PlayerMix")
 tween_resource = SubResource("Resource_wl1wm")
 follow_offset = Vector2(1, 50)
 follow_damping = true
@@ -37,6 +42,47 @@ follow_damping_value = Vector2(0.2, 0.2)
 
 [node name="Polygon2D" parent="PolygonLand" index="0"]
 color = Color(0, 0, 0, 1)
-polygon = PackedVector2Array(-78, -482, -78, -387, -354, -384, -352, -168, -88, -168, -90, -138, -354, -138, -348, 429, 318, 429, 316, -122, 129, 80, 115, 64, 90, 71, 288, -154, 323, -154, 288, -175, 318, -186, 320, -384, 83, -385, 65, -355, 65, -492, 797, -492, 788, 575, -755, 580, -737, -507)
+polygon = PackedVector2Array(-75, -506, -78, -387, -354, -384, -352, -168, -88, -168, -90, -138, -354, -138, -348, 429, 318, 429, 316, -122, 129, 80, 115, 64, 90, 71, 288, -154, 323, -154, 288, -175, 318, -186, 320, -384, 83, -385, 65, -355, 69, -506, 1274, -506, 1269, 580, -2224, 578, -2224, -499)
+
+[node name="PolygonLand2" parent="." instance=ExtResource("5_nbpx7")]
+
+[node name="Polygon2D" parent="PolygonLand2" index="0"]
+position = Vector2(844, -51)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-354, -384, -348, 429, 318, 429, 320, -384)
+
+[node name="PolygonLand5" parent="." instance=ExtResource("5_nbpx7")]
+position = Vector2(-2583, -733)
+
+[node name="Polygon2D" parent="PolygonLand5" index="0"]
+position = Vector2(714.213, 47.8343)
+scale = Vector2(0.728035, 0.467978)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-348, 5, -348, 251.757, -296.736, 297.52, -271.893, 404.701, 134.682, 421.449, 173.901, 293.824, 311.918, 279.04, 317, -5, 165.62, -22.1754, 172.521, -97.9413, 89.7109, -92.3975, 92.4714, -9.23975, -101.719, -2.96191, -129.736, -92.3975, -216.687, -92.3975, -233.799, 1.30798)
+
+[node name="PolygonLand4" parent="." instance=ExtResource("5_nbpx7")]
+
+[node name="Polygon2D" parent="PolygonLand4" index="0"]
+position = Vector2(-2528, -914)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-363, -1082, -336, 1515, 355, 1511, 350, 234, 318, 234, 315, -109, 350, -104, 353, -399, 939.961, -401.026, 980, -354, 985, -291, 1058, -285, 1066, -399, 1103.77, -401.591, 1109, -747, 1396, -742, 1393.59, -402.591, 1802, -404, 1797, -1077, 318, -1079)
+
+[node name="PolygonLand3" parent="." instance=ExtResource("5_nbpx7")]
+
+[node name="Polygon2D" parent="PolygonLand3" index="0"]
+position = Vector2(1023, -695)
+scale = Vector2(0.558967, 0.526546)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-301, -282, -373, -138, -398.95, 41.7819, -402, 254, -341, 497, 216.471, 503.28, 279.086, 315.262, 307.71, 153.833, 319, -58, 291, -213, 174, -368, 22, -405, -175, -384)
+
+[node name="PolygonPlatform" parent="." instance=ExtResource("6_03w6o")]
+
+[node name="Polygon2D" parent="PolygonPlatform" index="0"]
+polygon = PackedVector2Array(-302, 353, -125, 353, -127, 371, -305, 371)
 
 [editable path="PolygonLand"]
+[editable path="PolygonLand2"]
+[editable path="PolygonLand5"]
+[editable path="PolygonLand4"]
+[editable path="PolygonLand3"]
+[editable path="PolygonPlatform"]
